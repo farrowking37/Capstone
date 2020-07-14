@@ -45,7 +45,7 @@ def wordlistgen():
 	raw_words = text.split()
 
 	# Create a translate table to remove punctuation
-	remove_punctuation = str.maketrans('', '', s.punctuation + "”" + "“")
+	remove_punctuation = str.maketrans('', '', s.punctuation + "”" + "“" + "—")
 
 	# Use a list comprehension. For each word, strip punctuation
 	words = [w.translate(remove_punctuation) for w in raw_words]
