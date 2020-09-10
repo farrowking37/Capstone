@@ -26,17 +26,22 @@ def divide_chunks(list_to_chunk, n):
 
 # Function for generation the word lists used for encoding.
 def wordlistgen():
-	# Prompt user for input
-	file_path = input(
-		"Please enter the full path (including extension) of your file: "
-	)
-
 	# Create the master word list as a set to prevent duplicate words.
 	word_list = list()
 
 	# Read the contents of the file and save it to a variable.
-	with open(file_path, 'r', encoding='utf-8') as file:
-		text = file.read()
+	while True:
+		try:
+			# Prompt user for input
+			file_path = input(
+				"Please enter the full path (including extension) of your file: "
+			)
+
+			with open(file_path, 'r', encoding='utf-8') as file:
+				text = file.read()
+			break
+		except FileNotFoundError:
+			print("File not found, please ensure the path/filename is correct")
 
 	# Cast all upper case characters to lowercase
 	text = text.lower()
