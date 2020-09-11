@@ -4,9 +4,13 @@ import string as s
 import math
 import random
 from collections import OrderedDict
+import base64
 
-# Create a list of acceptable characters to include in a cipher
-valid_chars = list(s.ascii_letters + s.whitespace + s.punctuation + s.digits)
+# A list of valid characters for ascii encoding
+ascii_chars = list(s.ascii_letters + s.whitespace + s.punctuation + s.digits)
+
+# A list of valid characters in base64
+base_chars = list(s.ascii_letters + s.digits + "+" + "/" + "=")
 
 
 # Code below from following site
@@ -26,6 +30,19 @@ def divide_chunks(list_to_chunk, n):
 
 # Function for generation the word lists used for encoding.
 def wordlistgen():
+	"""Generates a list of unique words when passed a list of mixed words
+
+	:return: A list of unique words in order of appearance in original list
+	"""
+
+	# Provide user context for what their input should do
+	print(
+		"To encode or decode a message a word list is required." 
+		"A longer list will give better results."
+		"If decoding, the same list used to encode, must decode"
+	)
+	print("Ex. The full text of Moby Dick; or, The Whale")
+
 	# Create the master word list as a set to prevent duplicate words.
 	word_list = list()
 
@@ -37,8 +54,8 @@ def wordlistgen():
 				"Please enter the full path (including extension) of your file: "
 			)
 
-			with open(file_path, 'r', encoding='utf-8') as file:
-				text = file.read()
+			with open(file_path, 'r', encoding='utf-8') as text_file:
+				text = text_file.read()
 			break
 		except FileNotFoundError:
 			print("File not found, please ensure the path/filename is correct")
@@ -72,9 +89,11 @@ def wordlistgen():
 
 # Ask user which function they want to perform
 while True:
-	print("1. Encode a message")
-	print("2. Decode a message")
-	print("3. Quit")
+	print("1. Encode a text message")
+	print("2. Decode a text message")
+	print("3. Encode a file")
+	print("4. Decode a file")
+	print("5. Quit")
 
 	# Prompt user for a number, handle non number answers.
 	try:
@@ -85,21 +104,13 @@ while True:
 
 	# Encode message
 	if choice == 1:
-
-		# Provide user context for following actions
-		print(
-			"To encode a message a word list is required. A longer list will"
-			"give better results."
-		)
-		print("Ex. The full text of Moby Dick; or, The Whale")
-
 		# Call wordlistgen() to generate the word list needed for cipher
 		cipher_list = wordlistgen()
 
 		message = str(input("Please enter in the message to be encoded: "))
 
 		# Determine how many words should be in each chunk.
-		words_per_chunk = math.ceil(len(cipher_list) / len(valid_chars))
+		words_per_chunk = math.ceil(len(cipher_list) / len(ascii_chars))
 
 		# Call divide_chunks to break the cipher_list into equally sized chunks
 		chunked_wordlist = divide_chunks(list(cipher_list), words_per_chunk)
@@ -112,7 +123,7 @@ while True:
 		i = 0
 
 		# Loop through all the characters in valid characters
-		for character in valid_chars:
+		for character in ascii_chars:
 
 			# Selected a chunk as the value for the character
 			encode_table[character] = chunked_wordlist[i]
@@ -147,7 +158,7 @@ while True:
 
 		# TODO Make this chunk of code into a function
 		# Determine how many words should be in each chunk.
-		words_per_chunk = math.ceil(len(decode_list) / len(valid_chars))
+		words_per_chunk = math.ceil(len(decode_list) / len(ascii_chars))
 
 		# Call divide_chunks to break the cipher_list into equally sized chunks
 		chunked_wordlist = divide_chunks(list(decode_list), words_per_chunk)
@@ -160,7 +171,7 @@ while True:
 		i = 0
 
 		# Loop through all the characters in valid characters
-		for character in valid_chars:
+		for character in ascii_chars:
 			# Selected a chunk as the value for the character
 			association_table[character] = chunked_wordlist[i]
 
@@ -179,8 +190,128 @@ while True:
 		print("Your decoded message is...")
 		print(''.join(message))
 
-	# Exit program by breaking main loop
+	# Encode Message
 	elif choice == 3:
+
+		# Prompt user for filepath where file to be translated is located
+		encode_path = str(input("Enter the path for the file to be encoded: "))
+
+		# Open the file as raw bytecode
+		with open(encode_path, "rb") as file:
+			file_raw = file.read()
+
+		# Cast raw byte code to base64 encoded bytecode
+		file_base = base64.b64encode(file_raw)
+
+		# Cast base64 bytecode into base64 encoded strings
+		base_string = file_base.decode("utf-8")
+
+		# Call wordlistgen() to generate the word list needed for cipher
+		cipher_list = wordlistgen()
+
+		# Determine how many words should be in each chunk.
+		words_per_chunk = math.ceil(len(cipher_list) / len(base_chars))
+
+		# Call divide_chunks to break the cipher_list into equally sized chunks
+		chunked_wordlist = divide_chunks(list(cipher_list), words_per_chunk)
+		chunked_wordlist = list(chunked_wordlist)
+
+		# Create the encoding table as an empty dictionary
+		encode_table = dict()
+
+		# Create an iterator i to track progress through chunked_wordlist
+		i = 0
+
+		# Loop through all the characters in valid characters
+		for character in base_chars:
+			# Selected a chunk as the value for the character
+			encode_table[character] = chunked_wordlist[i]
+
+			# Add one to the iterator to get next chunk.
+			i += 1
+
+		# Create a list to store the encoded message.
+		ish_list = []
+
+		# Loop through all the characters, include whitespaces
+		for character in base_string:
+			# For each character, add a random word from all words that are
+			# associated with that character to the list.
+			ish_list.append(random.choice(encode_table[character]))
+
+		# Cast the encoded message back into a string.
+		ish_string = ' '.join(ish_list)
+
+		# Prompt user for save
+		save_path = str(input("Enter the path to save the encoded data: "))
+		print("Saving your encoded message...")
+		with open(save_path, "w") as file:
+			file.write(ish_string)
+
+	# Decode Message
+	elif choice == 4:
+
+		# Generate a wordlist used to decode the text
+		decode_list = wordlistgen()
+
+		# Get filepath
+		decode_path = str(input("Enter in the file path for file to decode: "))
+		with open(decode_path, "r") as file:
+			ish_string = file.read()
+
+		# TODO Make this chunk of code into a function
+		# Determine how many words should be in each chunk.
+		words_per_chunk = math.ceil(len(decode_list) / len(base_chars))
+
+		# Call divide_chunks to break the cipher_list into equally sized chunks
+		chunked_wordlist = divide_chunks(list(decode_list), words_per_chunk)
+		chunked_wordlist = list(chunked_wordlist)
+
+		# Create the encoding table as an empty dictionary
+		association_table = dict()
+
+		# Create an iterator i to track progress through chunked_wordlist
+		i = 0
+
+		# Loop through all the characters in valid characters
+		for character in base_chars:
+			# Selected a chunk as the value for the character
+			association_table[character] = chunked_wordlist[i]
+
+			# Add one to the iterator to get next chunk.
+			i += 1
+
+		# Create a dictionary to use to decode
+		decode_table = dict()
+
+		# For each word in original dictionary, create a word -> character rel.
+		for key in association_table.keys():
+			for word in association_table[key]:
+				decode_table[word] = key
+
+		# Cast the list encoded by ish to a string
+		ish_list = ish_string.split(" ")
+
+		# Cast the ish string to a base64 encoded list
+		base_list = [decode_table[word] for word in ish_list]
+
+		# Cast the base64 encoded list to a base64 encoded string
+		base_string = " ".join(base_list)
+
+		# Cast the base64 encoded string to a base64 encoded bytecode
+		decode_base = base_string.encode("utf-8")
+
+		# Cast base64 encoded bytecode to raw bytecode for writing
+		new_file_base = base64.b64decode(decode_base)
+
+		# Prompt user for filepath and write bytecode
+		save_path = str(input("Enter the path to save the file to: "))
+		print("Saving your decoded message...")
+		with open(save_path, "wb") as file:
+			file.write(new_file_base)
+
+	# Exit program by breaking main loop
+	elif choice == 5:
 		break
 
 	# Catch exception where user provides number not associated with a choice
