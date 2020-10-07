@@ -116,7 +116,7 @@ def wordlistgen():
 
     return encode_table, decode_table
 
-
+# Prompt user for initial wordlist generation
 encrypt_list, decrypt_list = wordlistgen()
 
 # Ask user which function they want to perform
