@@ -6,9 +6,6 @@ import random
 from collections import OrderedDict
 import base64
 
-# A list of valid characters for ascii encoding
-ascii_chars = list(s.ascii_letters + s.whitespace + s.punctuation + s.digits)
-
 # A list of valid characters in base64
 base_chars = list(s.ascii_letters + s.digits + "+" + "/" + "=")
 
