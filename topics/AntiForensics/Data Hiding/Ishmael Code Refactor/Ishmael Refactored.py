@@ -220,7 +220,7 @@ while True:
 
     # Change Wordlist
     elif choice == 3:
-        encode_list, decode_list = wordlistgen()
+        encrypt_list, decrypt_list = wordlistgen()
 
     # Exit program by breaking main loop
     elif choice == 4:
