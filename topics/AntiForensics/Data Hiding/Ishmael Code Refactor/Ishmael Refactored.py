@@ -1,4 +1,4 @@
-"""POC for a cipher system that translates 1 char into multiple words
+"""Code refactor of ishmael made to address a memory leak issue
 """
 import string as s
 import math
@@ -206,12 +206,12 @@ while True:
         # Cast base64 encoded bytecode to raw bytecode for writing
         new_file_base = base64.b64decode(decode_base)
 
-        # Prompt user for filepath and write bytecode
-        save_path = str(input("Enter the path to save the file to: "))
-        print("Saving your decoded message...")
-
         while True:
             try:
+                # Prompt user for filepath and write bytecode
+                save_path = str(input("Enter the path to save the file to: "))
+                print("Saving your decoded message...")
+
                 with open(save_path, "wb") as file:
                     file.write(new_file_base)
                 break
