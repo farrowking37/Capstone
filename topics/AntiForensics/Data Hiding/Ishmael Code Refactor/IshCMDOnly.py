@@ -193,11 +193,11 @@ def main():
     args = parser.parse_args()
 
     if args.encrypt:
-        encryptlist, decryptlist = wordlistgen(args[0])
-        encrypt(encryptlist, args[1], args[2])
+        encryptlist, decryptlist = wordlistgen(args.encrypt[0])
+        encrypt(encryptlist, args.encrypt[1], args.encrypt[2])
     elif args.decrypt:
-        encryptlist, decryptlist = wordlistgen(args[0])
-        decrypt(decryptlist, args[1], args[2])
+        encryptlist, decryptlist = wordlistgen(args.decrypt[0])
+        decrypt(decryptlist, args.decrypt[1], args.decrypt[2])
 
 
 if __name__ == "__main__":
