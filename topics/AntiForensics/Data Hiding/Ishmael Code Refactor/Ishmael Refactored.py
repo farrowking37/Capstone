@@ -120,7 +120,10 @@ def wordlistgen():
 
 
 # Prompt user for initial wordlist generation
-encrypt_list, decrypt_list = wordlistgen()
+try:
+    encrypt_list, decrypt_list = wordlistgen()
+except IndexError:
+    raise IndexError("Wordlist needs to contain at least 65 words.")
 
 # Ask user which function they want to perform
 while True:
@@ -160,6 +163,9 @@ while True:
 
         # Create a list to store the encoded message.
         ish_list = []
+
+        # Reset the random seed so encrypted files are not predictable
+        random.seed(a=None, version=2)
 
         # Loop through all the characters, include whitespaces
         for character in base_string:

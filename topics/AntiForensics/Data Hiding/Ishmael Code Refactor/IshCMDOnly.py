@@ -122,6 +122,9 @@ def encrypt(encrypt_list, file_path, save_path):
     # Create a list to store the encoded message.
     ish_list = []
 
+    # Reset the random seed so encrypted files are not predictable
+    random.seed(a=None, version=2)
+
     # Loop through all the characters, include whitespaces
     for character in base_string:
         # For each character, add a random word from all words that are
