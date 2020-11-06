@@ -64,6 +64,11 @@ def wordlistgen():
     # Split up the line into it's component words
     raw_words = text.split()
 
+    # Use the text itself as a key to randomly shuffle the word list.
+    # This improves cryptographic security.
+    random.seed(a=text, version=2)
+    random.shuffle(raw_words)
+
     # Create a translate table to remove punctuation
     remove_punctuation = str.maketrans('', '', s.punctuation + "”" + "“" + "—")
 
