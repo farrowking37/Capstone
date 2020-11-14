@@ -68,7 +68,7 @@ def wordlistgen(file_path):
         words = list(OrderedDict.fromkeys(words))
 
         # Determine how many words should be in each chunk.
-        words_per_chunk = math.ceil(len(words) / len(base_chars))
+        words_per_chunk = math.floor(len(words) / len(base_chars))
 
         # Call divide_chunks to break the cipher_list into equally sized chunks
         chunked_wordlist = divide_chunks(list(words), words_per_chunk)
